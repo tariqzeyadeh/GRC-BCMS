@@ -1,0 +1,979 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap');
+
+@import 'tailwindcss';
+
+/* Hide scrollbar for Gantt header */
+.header-no-scrollbar {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+}
+
+/* If your React app toggles a 'dark' class on the body */
+:root {
+  color-scheme: light;
+  /* Default */
+}
+
+:root.dark {
+  color-scheme: dark;
+  /* Forces browser UI to switch to dark mode */
+}
+
+.header-no-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+/* Scrollable regions where bars should stay hidden (wheel/touch still works) */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+
+  --color-slate-50: #f1f5f5;
+  --color-background: #f1f5f5;
+  --color-primary: #154063;
+  --color-primary-rich: #1569ad;
+  --color-primary-old: #f8485e;
+
+  /* --color-surface-elevated: #ffffff;
+  --color-card-surface: #ffffff;
+  --color-border: #e5e7eb;
+  --color-surface: #f8fafc; */
+
+  --color-brand: #3daae1;
+  --color-brand2: #1c90ce;
+  --color-brand3: #253679;
+  --color-brand-foreground: #0b1026;
+  --color-brand-muted: #a8b6ff;
+  --color-accent: #22c55e;
+  --color-accent-muted: #86efac;
+  --color-destructive: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+
+  /* Executive dashboard / chart tokens (from Aegis GRC UI) */
+  --color-success: #16a34a;
+  --color-success-foreground: #ffffff;
+  --color-danger: #dc2626;
+  --color-danger-foreground: #ffffff;
+  --color-muted-foreground: #64748b;
+  --color-foreground: #0f172a;
+  --color-chart-1: #3daae1;
+  --color-chart-2: #1c90ce;
+  --color-chart-3: #f59e0b;
+  --color-chart-4: #ef4444;
+  --color-chart-5: #64748b;
+  --color-low: #22c55e;
+  --color-medium: #f59e0b;
+  --color-high: #ef4444;
+
+  /* Light mode colors (default) */
+  --color-bg: #f8fafc;
+  --color-bg-elev: #ffffff;
+  --color-card: #ffffff;
+  --color-muted: #667085;
+  --color-border: #e5e7eb;
+  --color-ring: #5b7cfa;
+  --color-text: #0f172a;
+  --color-text-muted: #334155;
+  --color-inverse: #ffffff;
+
+  /* Semantic aliases */
+  --color-surface: var(--color-bg);
+  --color-surface-elevated: var(--color-bg-elev);
+  --color-card-surface: var(--color-card);
+
+  /* Theme-aware panel / label (test tokens — use instead of bg-white / text-gray-700) */
+  --color-panel: #ffffff;
+  --color-label: #334155;
+
+  /* Sky tint scale (theme-aware) */
+  --color-sky-50: #eff8fc;
+  --color-sky-100: #e0f4fc;
+  --color-sky-200: #b8dff5;
+
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+
+  --color-light: #f1f5f9;
+  --color-dark: #0f172a;
+  --color-muted: #64748b;
+  --color-accent: #6366f1;
+  --color-accent-light: #a5b4fc;
+
+  /* Green shades */
+  --color-green-100: #dcfce7;
+  /* Lightest */
+  --color-green-200: #bbf7d0;
+  --color-green-300: #86efac;
+  --color-green-400: #4ade80;
+  --color-green-500: #22c55e;
+  /* Original success color */
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+
+  /* Red shades */
+  --color-red-100: #fee2e2;
+  /* Lightest */
+  --color-red-200: #fecaca;
+  --color-red-300: #fca5a5;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  /* Original error color */
+  --color-red-600: #dc2626;
+  --color-red-800: #991b1b;
+
+  /* Orange shades */
+  --color-orange-50: #fff7ed;
+  --color-orange-400: #fb923c;
+  --color-orange-600: #ea580c;
+  --color-orange-800: #9a3412;
+
+  /* Amber shades (yellow) */
+  --color-amber-50: #fffbeb;
+  --color-amber-400: #fbbf24;
+  --color-amber-600: #d97706;
+  --color-amber-800: #92400e;
+
+  /* Radii */
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  --shadow-custom: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 8px 30px rgba(0, 0, 0, 0.08);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.32, 0, 0.67, 0);
+  --duration-fast: 120ms;
+  --duration: 220ms;
+  --duration-slow: 380ms;
+
+  /* Container widths */
+  --container-3xl: 80rem;
+  --container-2xl: 72rem;
+  --container-xl: 64rem;
+}
+
+/* ===== Dark Mode Overrides ===== */
+/* Manual theme switching via data-theme attribute */
+:root[data-theme='dark'] {
+  --color-bg: #0f172a;
+  --color-bg-elev: #111827;
+  --color-card: #0b1220;
+  --color-muted: #64748b;
+  --color-border: #25304b;
+  --color-text: #e5e7eb;
+  --color-text-muted: #cbd5e1;
+  --color-inverse: #0f172a;
+  --color-surface: var(--color-bg);
+  --color-surface-elevated: var(--color-bg-elev);
+  --color-card-surface: var(--color-card);
+
+  --color-panel: #1e293b;
+  --color-label: #94a3b8;
+
+  --color-sky-50: #0c1628;
+  --color-sky-100: #152238;
+  --color-sky-200: #1e3a5f;
+}
+
+/* Fallback to system preference if no data-theme is set */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-bg: #0f172a;
+    --color-bg-elev: #111827;
+    --color-card: #0b1220;
+    --color-muted: #64748b;
+    --color-border: #25304b;
+    --color-text: #e5e7eb;
+    --color-text-muted: #cbd5e1;
+    --color-inverse: #0f172a;
+    --color-surface: var(--color-bg);
+    --color-surface-elevated: var(--color-bg-elev);
+    --color-card-surface: var(--color-card);
+
+    --color-panel: #1e293b;
+    --color-label: #94a3b8;
+
+    --color-sky-50: #0c1628;
+    --color-sky-100: #152238;
+    --color-sky-200: #1e3a5f;
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-[var(--color-surface)] text-[var(--color-text)] antialiased;
+    font-family: var(--font-sans);
+  }
+
+  /* Headings scale */
+  h1 {
+    @apply text-3xl md:text-2xl font-semibold tracking-tight;
+  }
+
+  h2 {
+    @apply text-2xl md:text-xl font-semibold tracking-tight;
+  }
+
+  h3 {
+    @apply text-xl md:text-lg font-semibold;
+  }
+
+  h4 {
+    @apply text-lg md:text-sm font-semibold;
+  }
+
+  a {
+    @apply text-[var(--color-brand)] underline-offset-4 hover:underline;
+  }
+
+  span {
+    font-size: 12px;
+  }
+
+  /* Focus ring */
+  :where(a, button, input, select, textarea, [role='button'], [tabindex]) {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface)];
+    transition:
+      box-shadow var(--duration) var(--ease-out),
+      transform var(--duration) var(--ease-out),
+      background-color var(--duration) var(--ease-out),
+      color var(--duration) var(--ease-out);
+  }
+
+  /* Scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #a0aec0 transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #a0aec0 transparent;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  /* RTL support */
+  [dir='rtl'] .rtl-flip {
+    transform: scaleX(-1);
+  }
+}
+
+@utility card {
+  background: var(--color-card-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+@utility card-hover {
+  transition:
+    transform var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+@utility container-app {
+  max-width: var(--container-3xl);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 2vw, 2rem);
+}
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.75rem;
+  padding-inline: 1rem;
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  transition:
+    transform var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+@utility btn-primary {
+  background: var(--color-brand);
+  color: white;
+  border-color: transparent;
+}
+
+@utility btn-ghost {
+  background: transparent;
+  color: var(--color-text);
+}
+
+@utility input-base {
+  width: 100%;
+  height: 2.75rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  padding-inline: 0.875rem;
+  color: var(--color-text);
+}
+
+/* Override browser autofill styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--color-surface-elevated) inset !important;
+  -webkit-text-fill-color: var(--color-text) !important;
+  background-color: var(--color-surface-elevated) !important;
+  background-image: none !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Fix caret color for input fields */
+input {
+  caret-color: var(--color-text) !important;
+}
+
+@keyframes otp-caret-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@utility textarea-base {
+  width: 100%;
+  min-height: 7rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  padding: 0.875rem;
+  color: var(--color-text);
+}
+
+@utility options {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  color: var(--color-text);
+  background: var(--color-surface-elevated);
+}
+
+option {
+  @apply options;
+}
+
+td {
+  @apply bg-surface;
+}
+
+/* body {
+  background-color: var(--color-surface);
+} */
+body.ar-font {
+  font-family: 'Tajawal', 'Inter', sans-serif !important;
+}
+
+body.ar-font :lang(en) {
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* Custom utility classes */
+.bg-glass {
+  @apply bg-white/95 backdrop-blur-xs;
+}
+
+/* ===== ACCESSIBILITY WIDGET STYLES =====
+   Classes below are toggled on <html> by AccessibilityContext. Font scale is
+   handled separately via an inline root font-size (see AccessibilityContext)
+   so every rem-based Tailwind utility scales together, instead of forcing
+   one fixed pixel size onto every element regardless of its role. */
+
+/* --- Readability: line height / letter spacing --- */
+html.accessibility-line-relaxed body,
+html.accessibility-line-relaxed body * {
+  line-height: 1.7 !important;
+}
+
+html.accessibility-line-loose body,
+html.accessibility-line-loose body * {
+  line-height: 2.1 !important;
+}
+
+html.accessibility-tracking-wide body,
+html.accessibility-tracking-wide body * {
+  letter-spacing: 0.03em !important;
+}
+
+html.accessibility-tracking-wider body,
+html.accessibility-tracking-wider body * {
+  letter-spacing: 0.06em !important;
+}
+
+/* --- Dyslexia-friendly typeface (Lexend, imported at top of file) --- */
+html.accessibility-dyslexia-font body,
+html.accessibility-dyslexia-font body * {
+  font-family: 'Lexend', 'Inter', sans-serif !important;
+}
+
+/* --- Highlight links / headings --- */
+html.accessibility-highlight-links a {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 3px !important;
+  color: #1d4ed8 !important;
+}
+
+html.accessibility-highlight-headings h1,
+html.accessibility-highlight-headings h2,
+html.accessibility-highlight-headings h3,
+html.accessibility-highlight-headings h4,
+html.accessibility-highlight-headings h5,
+html.accessibility-highlight-headings h6 {
+  outline: 2px dashed #f59e0b !important;
+  outline-offset: 4px !important;
+  background-color: rgba(245, 158, 11, 0.08) !important;
+}
+
+/* --- Color / contrast profiles ---
+   Implemented as CSS filters on <html> rather than chasing every Tailwind
+   color utility individually, so they work regardless of how a component
+   authored its colors. "Dark Mode" is not a filter here - it reuses the
+   app's real dark theme via ThemeContext (see AccessibilityContext). */
+html.accessibility-color-invert {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html.accessibility-color-monochrome {
+  filter: grayscale(1);
+}
+
+html.accessibility-color-high-contrast {
+  filter: contrast(1.5) saturate(1.15);
+}
+
+html.accessibility-color-low-saturation {
+  filter: saturate(0.45);
+}
+
+html.accessibility-color-high-saturation {
+  filter: saturate(2.1);
+}
+
+/* --- Reduced motion --- */
+html.accessibility-reduced-motion *,
+html.accessibility-reduced-motion *::before,
+html.accessibility-reduced-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* --- Strong focus indicators --- */
+html.accessibility-focus-strong *:focus,
+html.accessibility-focus-strong *:focus-visible {
+  outline: 3px solid #2563eb !important;
+  outline-offset: 3px !important;
+  border-radius: 2px;
+}
+
+/* --- Big cursor --- */
+html.accessibility-big-cursor,
+html.accessibility-big-cursor * {
+  cursor:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"><path d="M3 2l7.07 17.5 2.51-7.39L20 9.57z" fill="black" stroke="white" stroke-width="1.5"/></svg>')
+      2 2,
+    auto !important;
+}
+
+/* Screen-reader-only utility text. */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Generic scrollbar hiding utility */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes pulse-brightness {
+
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(0.65);
+  }
+}
+
+@keyframes formStepFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero watermark — CSS-only so it does not break card backdrop-blur */
+@keyframes hero-logo-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 0.12;
+    transform: scale(1);
+  }
+}
+
+@keyframes hero-logo-breathe {
+
+  0%,
+  100% {
+    opacity: 0.12;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.16;
+    transform: scale(1.02);
+  }
+}
+
+.hero-logo-watermark {
+  opacity: 0.12;
+  mix-blend-mode: screen;
+  transform: scale(1);
+  will-change: opacity, transform;
+  animation:
+    hero-logo-enter 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both,
+    hero-logo-breathe 8s ease-in-out 1.9s infinite;
+}
+
+/* ACO hierarchy — subtle brand → brand2 theme washes */
+.aco-level-badge {
+  border: 1px solid color-mix(in srgb, var(--color-brand) 18%, var(--color-border));
+  color: var(--color-brand2);
+}
+
+.aco-level-badge--domain {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-brand) 9%, var(--color-surface)),
+    var(--color-surface)
+  );
+}
+
+.aco-level-badge--subdomain {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-brand) 7%, var(--color-surface)),
+    color-mix(in srgb, var(--color-brand2) 6%, var(--color-surface))
+  );
+}
+
+.aco-level-badge--requirement {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-brand2) 8%, var(--color-surface)),
+    color-mix(in srgb, var(--color-brand) 5%, var(--color-surface))
+  );
+}
+
+.aco-level-badge--evidence {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-brand) 6%, var(--color-surface)),
+    color-mix(in srgb, var(--color-brand2) 5%, var(--color-surface))
+  );
+}
+
+.aco-level-accent--domain {
+  border-inline-start-color: var(--color-brand) !important;
+}
+
+.aco-level-accent--subdomain {
+  border-inline-start-color: color-mix(in srgb, var(--color-brand) 55%, var(--color-brand2)) !important;
+}
+
+.aco-level-accent--requirement {
+  border-inline-start-color: var(--color-brand2) !important;
+}
+
+.aco-level-accent--evidence {
+  border-inline-start-color: color-mix(in srgb, var(--color-brand2) 45%, var(--color-border)) !important;
+}
+
+.aco-level-panel--wash {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-brand) 6%, var(--color-surface-elevated)),
+    var(--color-surface-elevated)
+  );
+}
+
+.aco-level-panel--subdomain {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-brand) 5%, var(--color-surface)),
+    color-mix(in srgb, var(--color-brand2) 4%, var(--color-surface))
+  );
+}
+
+.aco-level-panel--requirement {
+  background: var(--color-surface);
+  border-color: color-mix(in srgb, var(--color-brand2) 14%, var(--color-border));
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-brand2) 5%, transparent);
+}
+
+.aco-level-panel--requirement-header {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-brand2) 9%, var(--color-surface-elevated)),
+    color-mix(in srgb, var(--color-brand) 6%, var(--color-surface))
+  );
+  border-bottom: 1px solid color-mix(in srgb, var(--color-brand2) 12%, var(--color-border));
+}
+
+.aco-level-panel--requirement-body {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-brand) 3%, var(--color-surface)),
+    var(--color-surface)
+  );
+}
+
+.aco-level-chip {
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  border-color: color-mix(in srgb, var(--color-brand) 12%, var(--color-border));
+}
+
+.aco-level-evidence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.625rem;
+}
+
+.aco-level-panel--evidence {
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--color-brand) 12%, var(--color-border));
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-brand) 4%, var(--color-surface)),
+    var(--color-surface)
+  );
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.aco-level-evidence-list > *:nth-child(even) .aco-level-panel--evidence {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-brand2) 4%, var(--color-surface)),
+    color-mix(in srgb, var(--color-brand) 2%, var(--color-surface))
+  );
+}
+
+.aco-level-panel--evidence:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 22%, var(--color-border));
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-brand2) 7%, transparent);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-brand) 7%, var(--color-surface)),
+    color-mix(in srgb, var(--color-brand2) 5%, var(--color-surface))
+  );
+}
+
+.aco-level-evidence-index {
+  border: 1px solid color-mix(in srgb, var(--color-brand2) 20%, var(--color-border));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-brand) 12%, var(--color-surface)),
+    color-mix(in srgb, var(--color-brand2) 10%, var(--color-surface))
+  );
+  color: var(--color-brand2);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.aco-level-domain-open {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-brand) 5%, var(--color-surface)),
+    var(--color-surface)
+  );
+}
+
+.aco-level-chevron-open {
+  background: linear-gradient(135deg, var(--color-brand), var(--color-brand2));
+  color: #fff;
+  border-color: transparent;
+}
+
+.aco-level-progress {
+  background: linear-gradient(90deg, var(--color-brand), var(--color-brand2));
+}
+
+/* ---------------------------------------------------------------------------
+   Attachments — shared by src/components/attachments/AttachmentSection.jsx
+   --------------------------------------------------------------------------- */
+
+/* Indeterminate transfer: used when the response carries no Content-Length, so there is a real
+   percentage to show. Runs on transform only, so it stays on the compositor. */
+@keyframes attachment-progress-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.attachment-progress-indeterminate {
+  width: 25%;
+  animation: attachment-progress-slide 1.1s ease-in-out infinite;
+}
+
+/* RTL reads right-to-left, so the sweep has to travel the other way. */
+[dir='rtl'] .attachment-progress-indeterminate {
+  animation-name: attachment-progress-slide-rtl;
+}
+
+@keyframes attachment-progress-slide-rtl {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-400%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .attachment-progress-indeterminate {
+    width: 100%;
+    animation: none;
+    opacity: 0.55;
+  }
+}
+/* —— Active Crisis Dashboard (emergency theme) —— */
+@keyframes crisis-banner-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.75; }
+}
+
+@keyframes crisis-siren {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.7; }
+}
+
+.crisis-mode {
+  background: #0c0506;
+  color: #fee2e2;
+  box-shadow: 0 0 0 1px rgba(127, 29, 29, 0.5), 0 12px 40px rgba(69, 10, 10, 0.45);
+}
+
+.crisis-banner {
+  background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 45%, #1a0505 100%);
+  border-bottom: 2px solid #dc2626;
+}
+
+.crisis-banner-pulse {
+  background: radial-gradient(ellipse at 30% 50%, rgba(239, 68, 68, 0.45), transparent 55%);
+  animation: crisis-banner-pulse 2.2s ease-in-out infinite;
+}
+
+.crisis-icon-pulse {
+  animation: crisis-siren 1.4s ease-in-out infinite;
+}
+
+.crisis-clock {
+  box-shadow: inset 0 0 24px rgba(220, 38, 38, 0.25), 0 0 20px rgba(220, 38, 38, 0.15);
+}
+
+.crisis-panel {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(127, 29, 29, 0.65);
+  background: linear-gradient(180deg, rgba(69, 10, 10, 0.55), rgba(0, 0, 0, 0.55));
+  padding: 1rem 1.1rem;
+}
+
+.crisis-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 5.5rem;
+  padding: 0.85rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(220, 38, 38, 0.55);
+  background: linear-gradient(180deg, #b91c1c, #7f1d1d);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.25;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 4px 14px rgba(127, 29, 29, 0.45);
+}
+
+.crisis-action-btn:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 18px rgba(185, 28, 28, 0.55);
+  transform: translateY(-1px);
+}
+
+.crisis-action-btn--amber {
+  border-color: rgba(245, 158, 11, 0.55);
+  background: linear-gradient(180deg, #d97706, #92400e);
+  box-shadow: 0 4px 14px rgba(146, 64, 14, 0.45);
+}
+
+.crisis-action-btn--outline {
+  background: rgba(0, 0, 0, 0.45);
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #fecaca;
+  box-shadow: none;
+}
+
+.crisis-input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(127, 29, 29, 0.7);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fee2e2;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.875rem;
+  resize: vertical;
+}
+
+.crisis-input::placeholder {
+  color: rgba(252, 165, 165, 0.45);
+}
+
+/* Override global brand/blue focus ring inside crisis mode */
+.crisis-mode :where(a, button, input, select, textarea, [role='button'], [tabindex]):focus-visible {
+  --tw-ring-color: rgba(239, 68, 68, 0.75);
+  --tw-ring-offset-color: #0c0506;
+  outline: none;
+}
+
+.crisis-input:focus,
+.crisis-input:focus-visible {
+  outline: none !important;
+  border-color: #f87171;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.55);
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-ring-offset-shadow: 0 0 #0000;
+}
+
+.crisis-cancel-btn {
+  height: 2.25rem;
+  padding: 0 1rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(248, 113, 113, 0.55);
+  background: transparent;
+  color: #fecaca;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.crisis-cancel-btn:hover {
+  background: rgba(127, 29, 29, 0.35);
+  color: #fff;
+}
+
+html.accessibility-focus-strong .crisis-mode *:focus,
+html.accessibility-focus-strong .crisis-mode *:focus-visible {
+  outline-color: #ef4444 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crisis-banner-pulse,
+  .crisis-icon-pulse {
+    animation: none;
+  }
+}
