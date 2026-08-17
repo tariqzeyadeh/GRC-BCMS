@@ -5,9 +5,16 @@ import { ArrowLeft, ArrowRight, Info, Save } from 'lucide-react';
 
 import { BiaStepper, ImpactGrid, DependenciesSection } from '../components/bcms';
 import { biaDraftMeta, wizardSteps } from '../data/mockBia';
+import { mockRisks } from '../data/mockRisks';
+import { useAppData } from '../context/AppDataContext';
+import { appendAudit } from '../lib/auditTrail';
+import { useAuth } from '../context/AuthContext';
 
 const BiaWizard = () => {
   const { t } = useTranslation('bcms');
+  const { t: tg } = useTranslation('grc');
+  const { user } = useAuth();
+  const { processRiskLinks, linkProcessRisks } = useAppData();
   const [activeStep, setActiveStep] = useState('impact');
   const [details, setDetails] = useState({
     processName: biaDraftMeta.processName,
@@ -15,7 +22,15 @@ const BiaWizard = () => {
     owner: biaDraftMeta.owner,
     description: 'End-to-end authorization, clearing, and settlement for card and ACH payments.',
   });
-  const [rtoRpo, setRtoRpo] = useState({ rto: '1', rpo: '15', justification: 'Tier 1 financial impact within 1 hour drives RTO.' });
+  const [rtoRpo, setRtoRpo] = useState({
+    rto: '1',
+    rpo: '15',
+    justification: 'Tier 1 financial impact within 1 hour drives RTO.',
+  });
+  const processId = biaDraftMeta.id || 'BIA-001';
+  const [selectedRisks, setSelectedRisks] = useState(
+    () => processRiskLinks.find(x => x.processId === processId)?.riskIds || ['RSK-001', 'RSK-002']
+  );
 
   const stepIndex = wizardSteps.find(s => s.id === activeStep)?.index ?? 2;
 
@@ -147,6 +162,47 @@ const BiaWizard = () => {
               <p className="text-xs text-muted-foreground m-0">{t('RPO')}</p>
               <p className="font-mono text-sm font-semibold m-0">{rtoRpo.rpo}m</p>
             </div>
+          </div>
+          <div className="rounded-lg border border-border bg-surface p-4 flex flex-col gap-3">
+            <p className="text-sm font-semibold text-foreground m-0">{tg('Linked risks for this process')}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+              {mockRisks.slice(0, 12).map(r => {
+                const checked = selectedRisks.includes(r.id);
+                return (
+                  <label key={r.id} className="flex items-start gap-2 text-xs text-foreground cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="mt-0.5 accent-[var(--color-brand)]"
+                      checked={checked}
+                      onChange={() =>
+                        setSelectedRisks(prev =>
+                          checked ? prev.filter(id => id !== r.id) : [...prev, r.id]
+                        )
+                      }
+                    />
+                    <span>
+                      <span className="font-mono">{r.id}</span> · {tg(r.title)}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              className="btn btn-ghost border border-border w-fit"
+              onClick={() => {
+                linkProcessRisks(processId, selectedRisks);
+                appendAudit({
+                  action: 'update',
+                  entityType: 'bia',
+                  entityId: processId,
+                  summary: 'Saved risk links for process',
+                  user: user?.name || 'System',
+                });
+              }}
+            >
+              {tg('Save risk links')}
+            </button>
           </div>
         </section>
       )}

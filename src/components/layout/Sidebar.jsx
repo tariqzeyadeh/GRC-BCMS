@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronLeft, ChevronRight, X, LogOut, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { SIDEBAR_ROUTES } from '../../constants/sidebarRoutes';
-import { useSidebar } from '../../context';
+import { SIDEBAR_ROUTES, SIDEBAR_SECTIONS } from '../../constants/sidebarRoutes';
+import { useSidebar, useAuth } from '../../context';
 import { cn } from '../../lib/utils';
 
 function pathMatches(pathname, routePath) {
@@ -33,6 +33,8 @@ function isParentActive(pathname, route) {
 
 const Sidebar = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   const { isCollapsed, setIsCollapsed } = useSidebar();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation('sidebar');
   const location = useLocation();
   const isRTL = i18n.dir() === 'rtl';
@@ -41,7 +43,8 @@ const Sidebar = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   useEffect(() => {
     const next = {};
     SIDEBAR_ROUTES.forEach(route => {
-      if (route.children?.length && isParentActive(location.pathname, route)) {
+      const childActive = route.children?.some(c => isChildActive(location.pathname, c));
+      if (route.children?.length && (isParentActive(location.pathname, route) || childActive)) {
         next[route.key] = true;
       }
     });
@@ -59,6 +62,100 @@ const Sidebar = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
   };
 
   const showLabels = !isCollapsed || isMobileMenuOpen;
+
+  const renderRoute = route => {
+    const hasChildren = route.children?.length > 0;
+    const parentActive = isParentActive(location.pathname, route);
+    const expanded = Boolean(openGroups[route.key]) && showLabels;
+
+    if (hasChildren) {
+      return (
+        <li key={route.key}>
+          <div className="flex items-center gap-1">
+            <Link
+              to={route.path}
+              onClick={handleLinkClick}
+              className={cn(
+                'flex flex-1 items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-200 font-medium text-text no-underline min-w-0',
+                parentActive && !expanded ? 'bg-brand/15 text-brand' : '',
+                parentActive && expanded ? 'text-brand' : ''
+              )}
+              title={!showLabels ? t(route.label) : ''}
+            >
+              {route.icon && (
+                <span className="shrink-0">
+                  <route.icon size={22} strokeWidth={1} />
+                </span>
+              )}
+              {showLabels && <span className="truncate">{t(route.label)}</span>}
+            </Link>
+            {showLabels && (
+              <button
+                type="button"
+                className="btn btn-ghost h-8 w-8 p-0 shrink-0 text-text-muted"
+                aria-expanded={expanded}
+                aria-label={t(route.label)}
+                onClick={() => toggleGroup(route.key)}
+              >
+                <ChevronDown
+                  size={16}
+                  className={cn('transition-transform', expanded && 'rotate-180')}
+                />
+              </button>
+            )}
+          </div>
+
+          {expanded && (
+            <ul className="mt-1 mb-2 ms-3 ps-3 border-s border-border space-y-0.5 list-none m-0">
+              {route.children.map(child => {
+                const childActive = isChildActive(location.pathname, child);
+                return (
+                  <li key={child.key}>
+                    <Link
+                      to={child.path}
+                      onClick={handleLinkClick}
+                      className={cn(
+                        'flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm no-underline transition-colors',
+                        childActive
+                          ? 'bg-brand text-white font-medium'
+                          : 'text-text-muted hover:text-text hover:bg-surface'
+                      )}
+                    >
+                      {child.icon && (
+                        <child.icon size={16} strokeWidth={1.5} className="shrink-0 opacity-90" />
+                      )}
+                      <span className="truncate">{t(child.label)}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </li>
+      );
+    }
+
+    return (
+      <li key={route.key}>
+        <Link
+          to={route.path}
+          onClick={handleLinkClick}
+          className={cn(
+            'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-200 font-medium text-text no-underline',
+            parentActive ? 'bg-brand text-white' : ''
+          )}
+          title={!showLabels ? t(route.label) : ''}
+        >
+          {route.icon && (
+            <span>
+              <route.icon size={22} strokeWidth={1} />
+            </span>
+          )}
+          {showLabels && <span className="whitespace-nowrap">{t(route.label)}</span>}
+        </Link>
+      </li>
+    );
+  };
 
   const sidebarContent = (
     <div className="flex flex-col h-full overflow-x-hidden">
@@ -80,7 +177,10 @@ const Sidebar = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
             <User className="text-brand" size={20} />
             {showLabels && (
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-text text-sm truncate">{t('user')}</p>
+                <p className="font-medium text-text text-sm truncate">{user?.name || t('user')}</p>
+                {user?.role && showLabels && (
+                  <p className="text-[10px] text-text-muted m-0 truncate">{user.role}</p>
+                )}
               </div>
             )}
           </div>
@@ -88,105 +188,35 @@ const Sidebar = ({ isMobileMenuOpen, onCloseMobileMenu }) => {
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
-        <ul className="space-y-1 m-0 p-0 list-none">
-          {SIDEBAR_ROUTES.filter(route => route.showInSidebar).map(route => {
-            const hasChildren = route.children?.length > 0;
-            const parentActive = isParentActive(location.pathname, route);
-            const expanded = Boolean(openGroups[route.key]) && showLabels;
+        <div className="space-y-3">
+          {SIDEBAR_SECTIONS.map(section => {
+            const visibleRoutes = section.routes.filter(route => route.showInSidebar);
+            if (!visibleRoutes.length) return null;
 
             return (
-              <li key={route.key}>
-                {hasChildren ? (
-                  <>
-                    <div className="flex items-center gap-1">
-                      <Link
-                        to={route.path}
-                        onClick={handleLinkClick}
-                        className={cn(
-                          'flex flex-1 items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-200 font-medium text-text no-underline min-w-0',
-                          parentActive && !expanded ? 'bg-brand/15 text-brand' : '',
-                          parentActive && expanded ? 'text-brand' : ''
-                        )}
-                        title={!showLabels ? t(route.label) : ''}
-                      >
-                        {route.icon && (
-                          <span className="shrink-0">
-                            <route.icon size={22} strokeWidth={1} />
-                          </span>
-                        )}
-                        {showLabels && <span className="truncate">{t(route.label)}</span>}
-                      </Link>
-                      {showLabels && (
-                        <button
-                          type="button"
-                          className="btn btn-ghost h-8 w-8 p-0 shrink-0 text-text-muted"
-                          aria-expanded={expanded}
-                          aria-label={t(route.label)}
-                          onClick={() => toggleGroup(route.key)}
-                        >
-                          <ChevronDown
-                            size={16}
-                            className={cn('transition-transform', expanded && 'rotate-180')}
-                          />
-                        </button>
-                      )}
-                    </div>
-
-                    {expanded && (
-                      <ul className="mt-1 mb-2 ms-3 ps-3 border-s border-border space-y-0.5 list-none m-0">
-                        {route.children.map(child => {
-                          const childActive = isChildActive(location.pathname, child);
-                          return (
-                            <li key={child.key}>
-                              <Link
-                                to={child.path}
-                                onClick={handleLinkClick}
-                                className={cn(
-                                  'flex items-center gap-2 px-2.5 py-1.5 rounded-md text-sm no-underline transition-colors',
-                                  childActive
-                                    ? 'bg-brand text-white font-medium'
-                                    : 'text-text-muted hover:text-text hover:bg-surface'
-                                )}
-                              >
-                                {child.icon && (
-                                  <child.icon size={16} strokeWidth={1.5} className="shrink-0 opacity-90" />
-                                )}
-                                <span className="truncate">{t(child.label)}</span>
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </>
-                ) : (
-                  <Link
-                    to={route.path}
-                    onClick={handleLinkClick}
-                    className={cn(
-                      'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-200 font-medium text-text no-underline',
-                      parentActive ? 'bg-brand text-white' : ''
-                    )}
-                    title={!showLabels ? t(route.label) : ''}
-                  >
-                    {route.icon && (
-                      <span>
-                        <route.icon size={22} strokeWidth={1} />
-                      </span>
-                    )}
-                    {showLabels && <span className="whitespace-nowrap">{t(route.label)}</span>}
-                  </Link>
+              <div key={section.key} className="space-y-1">
+                {showLabels && (
+                  <p className="px-3 pt-2 pb-1 m-0 text-[10px] font-bold uppercase tracking-[0.08em] text-text-muted">
+                    {t(section.label)}
+                  </p>
                 )}
-              </li>
+                {!showLabels && section.key !== 'main' && (
+                  <div className="mx-3 my-2 border-t border-border" aria-hidden="true" />
+                )}
+                <ul className="space-y-1 m-0 p-0 list-none">{visibleRoutes.map(renderRoute)}</ul>
+              </div>
             );
           })}
-        </ul>
+        </div>
       </div>
 
       <div className="shrink-0 border-t border-border pt-4 px-4 pb-4">
         <button
           type="button"
-          onClick={() => console.info('Logout clicked')}
+          onClick={() => {
+            logout();
+            navigate('/login', { replace: true });
+          }}
           className="w-full flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition-colors duration-200 font-medium text-red-600 hover:bg-red-50 hover:text-red-700 border border-border"
           title={!showLabels ? t('logout') : ''}
         >

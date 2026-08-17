@@ -1,17 +1,21 @@
 import { Link } from 'react-router-dom';
+import { Bell } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import MobileMenuButton from './MobileMenuButton';
 import LanguageToggle from './LanguageToggle';
 import LogoutButton from './LogoutButton';
 import ThemeToggle from '../../ui/ThemeToggle';
 
-import { useTheme } from '../../../context/ThemeContext';
+import { useAuth } from '../../../context/AuthContext';
+import { useAppData } from '../../../context/AppDataContext';
 import { NAVBAR_CLASSES } from '../../../constants/navbarConstants';
-import DevoteamLogo from '../../../assets/logo_name.png';
-import DevoteamLogoWhite from '../../../assets/logo_name_white.png';
+import DtLogo from '../../../assets/dt-logo.png';
 
 const Navbar = ({ onToggleMobileMenu }) => {
-  const { theme } = useTheme();
+  const { user } = useAuth();
+  const { unreadCount } = useAppData();
+  const { t } = useTranslation('grc');
 
   return (
     <header className={NAVBAR_CLASSES.header}>
@@ -20,14 +24,31 @@ const Navbar = ({ onToggleMobileMenu }) => {
           <MobileMenuButton onToggle={onToggleMobileMenu} />
           <Link to="/" className="flex items-center no-underline">
             <img
-              src={theme === 'dark' ? DevoteamLogoWhite : DevoteamLogo}
-              alt="logo"
-              className="w-24 sm:w-36 lg:w-48"
+              src={DtLogo}
+              alt="Devoteam"
+              className="h-8 sm:h-9 lg:h-10 w-auto rounded-full object-contain"
             />
           </Link>
         </div>
 
         <div className={NAVBAR_CLASSES.rightSection}>
+          {user && (
+            <span className="hidden sm:inline text-xs text-text-muted truncate max-w-40">
+              {user.name} · {t(user.role)}
+            </span>
+          )}
+          <Link
+            to="/notifications"
+            className="relative btn btn-ghost h-9 w-9 p-0 no-underline text-text"
+            aria-label={t('Notifications')}
+          >
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -end-0.5 min-w-4 h-4 px-1 rounded-full bg-danger text-white text-[10px] font-bold flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </Link>
           <ThemeToggle />
           <LanguageToggle />
           <LogoutButton />

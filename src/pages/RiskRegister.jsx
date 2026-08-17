@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
+import { Download, X } from 'lucide-react';
 
 import { SimpleDataGrid, StatusBadge, RiskLevelBadge } from '../components/grc';
 import { mockRisks } from '../data/mockRisks';
 import { getRiskBand, RISK_APPETITE_THRESHOLD } from '../constants/riskScore';
+import { exportPrintablePdf, exportRowsToCsv, tableHtml } from '../lib/export';
 
 const RiskRegister = () => {
   const { t } = useTranslation('grc');
@@ -71,14 +72,58 @@ const RiskRegister = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-text m-0">{t('Risk Register')}</h1>
-        <p className="text-text-muted text-sm mt-1 mb-0">
-          {t('ISO-aligned register with inherent vs residual ratings, controls, and treatment.')}
-        </p>
-        <p className="text-xs text-text-muted mt-1 mb-0">
-          {t('Appetite threshold')}: {RISK_APPETITE_THRESHOLD}
-        </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-text m-0">{t('Risk Register')}</h1>
+          <p className="text-text-muted text-sm mt-1 mb-0">
+            {t('ISO-aligned register with inherent vs residual ratings, controls, and treatment.')}
+          </p>
+          <p className="text-xs text-text-muted mt-1 mb-0">
+            {t('Appetite threshold')}: {RISK_APPETITE_THRESHOLD}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className="btn btn-ghost border border-border"
+            onClick={() =>
+              exportRowsToCsv(
+                'risk-register.csv',
+                [
+                  { key: 'id', header: 'ID' },
+                  { key: 'title', header: 'Title' },
+                  { key: 'category', header: 'Category' },
+                  { key: 'residualScore', header: 'Residual' },
+                  { key: 'status', header: 'Status' },
+                  { key: 'owner', header: 'Owner' },
+                ],
+                filtered
+              )
+            }
+          >
+            <Download size={16} /> {t('Export Excel')}
+          </button>
+          <button
+            type="button"
+            className="btn btn-ghost border border-border"
+            onClick={() =>
+              exportPrintablePdf(
+                t('Risk Register'),
+                tableHtml(
+                  [
+                    { key: 'id', header: 'ID' },
+                    { key: 'title', header: 'Title' },
+                    { key: 'residualScore', header: 'Residual' },
+                    { key: 'status', header: 'Status' },
+                  ],
+                  filtered
+                )
+              )
+            }
+          >
+            <Download size={16} /> {t('Export PDF')}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">

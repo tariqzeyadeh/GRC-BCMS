@@ -11,6 +11,7 @@ import {
   RecoveryProcedures,
 } from '../components/bcms';
 import { planHeader } from '../data/mockBcp';
+import { exportPrintablePdf } from '../lib/export';
 
 const ContinuityPlanEditor = () => {
   const { t } = useTranslation('bcms');
@@ -24,6 +25,16 @@ const ContinuityPlanEditor = () => {
     ],
     []
   );
+
+  const onExportPdf = () => {
+    exportPrintablePdf(
+      `${planHeader.id} — ${planHeader.title}`,
+      `<p><strong>Department:</strong> ${planHeader.department}</p>
+       <p><strong>Owner:</strong> ${planHeader.owner}</p>
+       <p><strong>RTO/RPO:</strong> ${planHeader.rto} / ${planHeader.rpo}</p>
+       <p>${planHeader.scope}</p>`
+    );
+  };
 
   return (
     <div className="flex flex-col gap-5">
@@ -50,7 +61,7 @@ const ContinuityPlanEditor = () => {
             </p>
           </div>
 
-          <button type="button" className="btn btn-primary w-fit self-start">
+          <button type="button" className="btn btn-primary w-fit self-start" onClick={onExportPdf}>
             <Download size={16} aria-hidden="true" />
             {t('Export PDF')}
           </button>

@@ -23,7 +23,16 @@ const STATUS_STYLES = {
   'Partially Effective': 'bg-amber-50 text-amber-800 border border-amber-400',
   Ineffective: 'bg-red-100 text-red-600',
   Approve: 'bg-green-100 text-green-700',
-  Reject: 'bg-red-100 text-red-600',
+  Connected: 'bg-green-100 text-green-700',
+  'Not configured': 'bg-gray-200 text-gray-700',
+  Pending: 'bg-amber-50 text-amber-800',
+  Pass: 'bg-green-100 text-green-700',
+  Partial: 'bg-amber-50 text-amber-800 border border-amber-400',
+  Fail: 'bg-red-100 text-red-600',
+  Planned: 'bg-sky-100 text-sky-700',
+  Completed: 'bg-green-100 text-green-700',
+  'On Track': 'bg-green-100 text-green-700',
+  Watch: 'bg-amber-50 text-amber-800 border border-amber-400',
 };
 
 /**

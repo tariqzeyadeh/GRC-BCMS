@@ -44,10 +44,12 @@ import {
 import { mockRisks } from '../data/mockRisks';
 import { mockPolicies, getExpiringPolicies } from '../data/mockPolicies';
 import { RISK_APPETITE_THRESHOLD, RAG_CLASSES, getAppetiteRag } from '../constants/riskScore';
+import { useAppData } from '../context/AppDataContext';
 
 const ExecutiveDashboard = () => {
   const { t } = useTranslation('grc');
   const navigate = useNavigate();
+  const { kris, pushNotification } = useAppData();
 
   const outOfAppetite = mockRisks.filter(r => !r.withinAppetite);
   const expiring = getExpiringPolicies(90);
@@ -193,6 +195,52 @@ const ExecutiveDashboard = () => {
           />
         ))}
       </div>
+
+      <section className="card p-4">
+        <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
+          <div>
+            <h2 className="m-0 text-base font-semibold text-text">{t('Key Risk Indicators')}</h2>
+            <p className="m-0 mt-1 text-xs text-text-muted">
+              {t('KRIs breach appetite or control targets and drive escalation.')}
+            </p>
+          </div>
+          <button
+            type="button"
+            className="btn btn-ghost border border-border h-8 text-xs"
+            onClick={() =>
+              pushNotification({
+                type: 'risk',
+                title: 'High residual risk escalation',
+                body: 'RSK-001 residual score exceeds appetite — notify Executive Management.',
+                linkTo: '/risks/RSK-001',
+              })
+            }
+          >
+            {t('Escalate high risk')}
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
+          {kris.map(k => {
+            const breached = k.unit === '%' ? k.value < k.threshold : k.value > k.threshold;
+            return (
+              <div
+                key={k.id}
+                className={`rounded-lg border p-3 ${breached ? 'border-danger/40 bg-danger/5' : 'border-border bg-surface'}`}
+              >
+                <p className="m-0 text-xs text-text-muted">{t(k.name)}</p>
+                <p className="m-0 mt-1 text-xl font-semibold text-text tabular-nums">
+                  {k.value}
+                  {k.unit === '%' ? '%' : ''}
+                </p>
+                <p className="m-0 mt-1 text-[11px] text-text-muted">
+                  {t('Appetite threshold')}: {k.threshold}
+                  {k.unit === '%' ? '%' : ''} · {k.owner}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
       <RiskHeatmap5x5
         risks={mockRisks}
